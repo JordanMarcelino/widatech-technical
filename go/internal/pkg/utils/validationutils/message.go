@@ -39,6 +39,8 @@ func TagToMsg(fe validator.FieldError) string {
 		return fmt.Sprintf("%s must be a boolean", fe.Field())
 	case "time_format":
 		return fmt.Sprintf("please send time in format of %s", constant.ConvertGoTimeLayoutToReadable(fe.Param()))
+	case "oneof":
+		return fmt.Sprintf("%s must be one of %s", fe.Field(), fe.Param())
 	default:
 		return "invalid input"
 	}
