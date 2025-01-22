@@ -68,6 +68,12 @@ func RegisterValidators() {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterTagNameFunc(validationutils.TagNameFormatter)
 		v.RegisterCustomTypeFunc(validationutils.DecimalType)
+
+		v.RegisterValidation("time_format", validationutils.TimeFormatValidator)
+		v.RegisterValidation("dgt", validationutils.DecimalGT)
+		v.RegisterValidation("dlt", validationutils.DecimalLT)
+		v.RegisterValidation("dgte", validationutils.DecimalGTE)
+		v.RegisterValidation("dlte", validationutils.DecimalLTE)
 	}
 }
 

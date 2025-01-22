@@ -7,7 +7,8 @@ import (
 )
 
 func BootstrapHttp(cfg *config.Config, router *gin.Engine) {
-
 	appController := controller.NewAppController()
 	appController.Route(router)
+
+	BootstrapInvoice(router)
 }
