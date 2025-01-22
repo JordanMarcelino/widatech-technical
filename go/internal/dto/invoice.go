@@ -1,33 +1,35 @@
 package dto
 
+import "github.com/JordanMarcelino/widatech-technical/internal/entity"
+
 type InvoiceResponse struct {
-	InvoiceNo       string
-	InvoiceDate     string
-	CustomerName    string
-	SalesPersonName string
-	PaymentType     string
-	Notes           string
-	Products        []ProductResponse
+	InvoiceNo       string             `json:"invoice_no"`
+	InvoiceDate     string             `json:"invoice_date"`
+	CustomerName    string             `json:"customer_name"`
+	SalesPersonName string             `json:"sales_person_name"`
+	PaymentType     string             `json:"payment_type"`
+	Notes           string             `json:"notes"`
+	Products        []*ProductResponse `json:"products"`
 }
 
 type CreateInvoiceRequest struct {
-	InvoiceNo       string                 `json:"invoice_no" binding:"required,min=1,max=255"`
-	InvoiceDate     string                 `json:"invoice_date" binding:"required,time_format=2006-01-02"`
-	CustomerName    string                 `json:"customer_name" binding:"required,min=2,max=255"`
-	SalesPersonName string                 `json:"sales_person_name" binding:"required,min=2,max=255"`
-	PaymentType     string                 `json:"payment_type" binding:"required,oneof=CASH CREDIT"`
-	Notes           string                 `json:"notes" binding:"required,min=5"`
-	Products        []CreateProductRequest `json:"products" binding:"required,dive"`
+	InvoiceNo       string                  `json:"invoice_no" binding:"required,min=1,max=255"`
+	InvoiceDate     string                  `json:"invoice_date" binding:"required,time_format=2006-01-02"`
+	CustomerName    string                  `json:"customer_name" binding:"required,min=2,max=255"`
+	SalesPersonName string                  `json:"sales_person_name" binding:"required,min=2,max=255"`
+	PaymentType     string                  `json:"payment_type" binding:"required,oneof='CASH' 'CREDIT'"`
+	Notes           string                  `json:"notes" binding:"required,min=5"`
+	Products        []*CreateProductRequest `json:"products" binding:"required,min=1,dive"`
 }
 
 type UpdateInvoiceRequest struct {
-	InvoiceNo       string                 `json:"-"`
-	InvoiceDate     string                 `json:"invoice_date" binding:"required,time_format=2006-01-02"`
-	CustomerName    string                 `json:"customer_name" binding:"required,min=2,max=255"`
-	SalesPersonName string                 `json:"sales_person_name" binding:"required,min=2,max=255"`
-	PaymentType     string                 `json:"payment_type" binding:"required,oneof=CASH CREDIT"`
-	Notes           string                 `json:"notes" binding:"required,min=5"`
-	Products        []UpdateProductRequest `json:"products" binding:"required,dive"`
+	InvoiceNo       string                  `json:"-"`
+	InvoiceDate     string                  `json:"invoice_date" binding:"required,time_format=2006-01-02"`
+	CustomerName    string                  `json:"customer_name" binding:"required,min=2,max=255"`
+	SalesPersonName string                  `json:"sales_person_name" binding:"required,min=2,max=255"`
+	PaymentType     string                  `json:"payment_type" binding:"required,oneof=CASH CREDIT"`
+	Notes           string                  `json:"notes" binding:"required,min=5"`
+	Products        []*UpdateProductRequest `json:"products" binding:"required,dive"`
 }
 
 type SearchInvoiceRequest struct {
@@ -39,4 +41,16 @@ type SearchInvoiceRequest struct {
 
 type DeleteInvoiceRequest struct {
 	InvoiceNo string `json:"-"`
+}
+
+func ToInvoiceResponse(invoice *entity.Invoice) *InvoiceResponse {
+	return &InvoiceResponse{
+		InvoiceNo:       invoice.InvoiceNo,
+		InvoiceDate:     invoice.InvoiceDate,
+		CustomerName:    invoice.CustomerName,
+		SalesPersonName: invoice.SalesPersonName,
+		PaymentType:     invoice.PaymentType,
+		Notes:           invoice.Notes,
+		Products:        ToProductResponses(invoice.Products),
+	}
 }
