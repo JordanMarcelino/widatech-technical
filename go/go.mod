@@ -1,4 +1,4 @@
-module github.com/JordanMarcelino/go-gin-starter
+module github.com/JordanMarcelino/widatech-technical
 
 go 1.23.2
 

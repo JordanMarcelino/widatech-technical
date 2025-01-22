@@ -3,8 +3,8 @@ package workers
 import (
 	"context"
 
-	"github.com/JordanMarcelino/go-gin-starter/internal/config"
-	"github.com/JordanMarcelino/go-gin-starter/internal/server"
+	"github.com/JordanMarcelino/widatech-technical/internal/config"
+	"github.com/JordanMarcelino/widatech-technical/internal/server"
 )
 
 func runHttpWorker(cfg *config.Config, ctx context.Context) {

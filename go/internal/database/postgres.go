@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/JordanMarcelino/go-gin-starter/internal/config"
-	"github.com/JordanMarcelino/go-gin-starter/internal/pkg/logger"
+	"github.com/JordanMarcelino/widatech-technical/internal/config"
+	"github.com/JordanMarcelino/widatech-technical/internal/pkg/logger"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 )

@@ -1,8 +1,8 @@
 package provider
 
 import (
-	"github.com/JordanMarcelino/go-gin-starter/internal/config"
-	"github.com/JordanMarcelino/go-gin-starter/internal/database"
+	"github.com/JordanMarcelino/widatech-technical/internal/config"
+	"github.com/JordanMarcelino/widatech-technical/internal/database"
 	"github.com/jmoiron/sqlx"
 )
 

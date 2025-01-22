@@ -7,9 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/JordanMarcelino/go-gin-starter/internal/config"
-	"github.com/JordanMarcelino/go-gin-starter/internal/pkg/logger"
-	"github.com/JordanMarcelino/go-gin-starter/internal/provider"
+	"github.com/JordanMarcelino/widatech-technical/internal/config"
+	"github.com/JordanMarcelino/widatech-technical/internal/pkg/logger"
+	"github.com/JordanMarcelino/widatech-technical/internal/provider"
 	"github.com/spf13/cobra"
 )
 

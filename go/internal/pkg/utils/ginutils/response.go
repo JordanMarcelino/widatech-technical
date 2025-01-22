@@ -3,8 +3,8 @@ package ginutils
 import (
 	"net/http"
 
-	"github.com/JordanMarcelino/go-gin-starter/internal/constant"
-	"github.com/JordanMarcelino/go-gin-starter/internal/dto"
+	"github.com/JordanMarcelino/widatech-technical/internal/constant"
+	"github.com/JordanMarcelino/widatech-technical/internal/dto"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,8 +1,8 @@
 package provider
 
 import (
-	"github.com/JordanMarcelino/go-gin-starter/internal/config"
-	"github.com/JordanMarcelino/go-gin-starter/internal/controller"
+	"github.com/JordanMarcelino/widatech-technical/internal/config"
+	"github.com/JordanMarcelino/widatech-technical/internal/controller"
 	"github.com/gin-gonic/gin"
 )
 

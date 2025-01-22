@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/JordanMarcelino/go-gin-starter/internal/config"
-	"github.com/JordanMarcelino/go-gin-starter/internal/pkg/httperror"
+	"github.com/JordanMarcelino/widatech-technical/internal/config"
+	"github.com/JordanMarcelino/widatech-technical/internal/pkg/httperror"
 	"github.com/gin-gonic/gin"
 )
 

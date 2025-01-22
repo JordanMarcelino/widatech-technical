@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/JordanMarcelino/go-gin-starter/internal/pkg/httperror"
-	"github.com/JordanMarcelino/go-gin-starter/internal/pkg/logger"
+	"github.com/JordanMarcelino/widatech-technical/internal/pkg/httperror"
+	"github.com/JordanMarcelino/widatech-technical/internal/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )

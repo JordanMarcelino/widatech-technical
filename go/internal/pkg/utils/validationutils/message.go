@@ -3,7 +3,7 @@ package validationutils
 import (
 	"fmt"
 
-	"github.com/JordanMarcelino/go-gin-starter/internal/constant"
+	"github.com/JordanMarcelino/widatech-technical/internal/constant"
 	"github.com/go-playground/validator/v10"
 )
 

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/JordanMarcelino/go-gin-starter/internal/pkg/constant"
+	"github.com/JordanMarcelino/widatech-technical/internal/pkg/constant"
 )
 
 func NewTimeoutError() *ResponseError {
