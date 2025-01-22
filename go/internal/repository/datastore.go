@@ -17,6 +17,8 @@ type DBTX interface {
 
 type DataStore interface {
 	Atomic(ctx context.Context, fn func(DataStore) error) error
+	InvoiceRepository() InvoiceRepository
+	ProductRepository() ProductRepository
 }
 
 type dataStore struct {
@@ -46,4 +48,12 @@ func (s *dataStore) Atomic(ctx context.Context, fn func(DataStore) error) error 
 	}
 
 	return tx.Commit()
+}
+
+func (s *dataStore) InvoiceRepository() InvoiceRepository {
+	return NewInvoiceRepository(s.db)
+}
+
+func (s *dataStore) ProductRepository() ProductRepository {
+	return NewProductRepository(s.db)
 }
