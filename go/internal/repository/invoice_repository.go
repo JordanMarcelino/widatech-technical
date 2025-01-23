@@ -14,6 +14,7 @@ type InvoiceRepository interface {
 	Save(ctx context.Context, invoice *entity.Invoice) error
 	Update(ctx context.Context, invoice *entity.Invoice) error
 	DeleteByID(ctx context.Context, invoiceNo string) error
+	IsExistsByID(ctx context.Context, invoiceNo string) bool
 }
 
 type invoiceRepositoryImpl struct {
@@ -89,8 +90,10 @@ func (r *invoiceRepositoryImpl) Search(ctx context.Context, req *dto.SearchInvoi
 
 func (r *invoiceRepositoryImpl) Save(ctx context.Context, invoice *entity.Invoice) error {
 	query := `
-		insert into invoices (invoice_no, invoice_date, customer_name, sales_person_name, payment_type, notes)
-		values ($1, $2, $3, $4, $5, $6)
+		insert into invoices
+			(invoice_no, invoice_date, customer_name, sales_person_name, payment_type, notes)
+		values
+			($1, $2, $3, $4, $5, $6)
 	`
 
 	_, err := r.DB.ExecContext(ctx, query, invoice.InvoiceNo, invoice.InvoiceDate, invoice.CustomerName, invoice.SalesPersonName, invoice.PaymentType, invoice.Notes)
@@ -106,5 +109,25 @@ func (r *invoiceRepositoryImpl) Update(ctx context.Context, invoice *entity.Invo
 }
 
 func (r *invoiceRepositoryImpl) DeleteByID(ctx context.Context, invoiceNo string) error {
-	panic("implement me")
+	query := `
+		delete from invoices where invoice_no = $1
+	`
+
+	_, err := r.DB.ExecContext(ctx, query, invoiceNo)
+	return err
+}
+
+func (r *invoiceRepositoryImpl) IsExistsByID(ctx context.Context, invoiceNo string) bool {
+	query := `
+		select exists(
+			select * from invoices where invoice_no = $1
+		)
+	`
+
+	var exists bool
+	if err := r.DB.QueryRowContext(ctx, query, invoiceNo).Scan(&exists); err != nil {
+		return false
+	}
+
+	return exists
 }

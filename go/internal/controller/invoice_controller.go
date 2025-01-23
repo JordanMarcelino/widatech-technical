@@ -19,8 +19,8 @@ func NewInvoiceController(invoiceUseCase usecase.InvoiceUseCase) *InvoiceControl
 func (c *InvoiceController) Route(r *gin.Engine) {
 	r.GET("/invoices", c.Search)
 	r.POST("/invoices", c.Create)
-	r.PUT("/invoices/:invoice_no", c.Update)
-	r.DELETE("/invoices/:invoice_no", c.Delete)
+	r.PUT("/invoices/:invoiceNo", c.Update)
+	r.DELETE("/invoices/:invoiceNo", c.Delete)
 }
 
 func (c *InvoiceController) Search(ctx *gin.Context) {
@@ -61,5 +61,13 @@ func (c *InvoiceController) Update(ctx *gin.Context) {
 }
 
 func (c *InvoiceController) Delete(ctx *gin.Context) {
+	invoiceNo := ctx.Param("invoiceNo")
 
+	req := &dto.DeleteInvoiceRequest{InvoiceNo: invoiceNo}
+	if err := c.invoiceUseCase.Delete(ctx, req); err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ginutils.ResponseOKPlain(ctx)
 }

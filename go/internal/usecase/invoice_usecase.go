@@ -3,8 +3,10 @@ package usecase
 import (
 	"context"
 
+	"github.com/JordanMarcelino/widatech-technical/internal/constant"
 	"github.com/JordanMarcelino/widatech-technical/internal/dto"
 	"github.com/JordanMarcelino/widatech-technical/internal/entity"
+	"github.com/JordanMarcelino/widatech-technical/internal/pkg/httperror"
 	"github.com/JordanMarcelino/widatech-technical/internal/pkg/utils/pageutils"
 	"github.com/JordanMarcelino/widatech-technical/internal/repository"
 )
@@ -89,5 +91,18 @@ func (u *invoiceUseCaseImpl) Update(ctx context.Context, req *dto.UpdateInvoiceR
 }
 
 func (u *invoiceUseCaseImpl) Delete(ctx context.Context, req *dto.DeleteInvoiceRequest) error {
-	panic("implement me")
+	return u.dataStore.Atomic(ctx, func(ds repository.DataStore) error {
+		invoiceRepository := ds.InvoiceRepository()
+		productRepository := ds.ProductRepository()
+
+		if ok := invoiceRepository.IsExistsByID(ctx, req.InvoiceNo); !ok {
+			return httperror.NewNotFoundError(constant.InvoiceNotFound)
+		}
+
+		if err := productRepository.DeleteByInvoiceNo(ctx, req.InvoiceNo); err != nil {
+			return err
+		}
+
+		return invoiceRepository.DeleteByID(ctx, req.InvoiceNo)
+	})
 }
