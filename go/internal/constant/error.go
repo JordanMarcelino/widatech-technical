@@ -1,5 +1,6 @@
 package constant
 
 const (
-	InvoiceNotFound = "invoice"
+	InvoiceNotFoundErrorMessage  = "invoice"
+	InvoiceDuplicateErrorMessage = "duplicate invoice with invoice number %s"
 )
