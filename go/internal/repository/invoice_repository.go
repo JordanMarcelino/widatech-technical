@@ -10,7 +10,7 @@ import (
 )
 
 type InvoiceRepository interface {
-	Search(ctx context.Context, searchInvoiceRequest *dto.SearchInvoiceRequest) ([]*entity.Invoice, error)
+	Search(ctx context.Context, req *dto.SearchInvoiceRequest) ([]*entity.Invoice, error)
 	Save(ctx context.Context, invoice *entity.Invoice) error
 	Update(ctx context.Context, invoice *entity.Invoice) error
 	DeleteByID(ctx context.Context, invoiceNo string) error
@@ -26,8 +26,65 @@ func NewInvoiceRepository(db DBTX) InvoiceRepository {
 	}
 }
 
-func (r *invoiceRepositoryImpl) Search(ctx context.Context, searchInvoiceRequest *dto.SearchInvoiceRequest) ([]*entity.Invoice, error) {
-	panic("implement me")
+func (r *invoiceRepositoryImpl) Search(ctx context.Context, req *dto.SearchInvoiceRequest) ([]*entity.Invoice, error) {
+	query := `
+		select
+			i.invoice_no, i.invoice_date, i.customer_name, i.sales_person_name, i.payment_type, i.notes,
+			p.id, p.name, p.quantity, p.total_cost_of_goods, p.total_price_sold
+		from
+			invoices i
+		join
+			products p on i.invoice_no = p.invoice_no
+		where
+			i.invoice_date between $1 and $2
+	`
+
+	rows, err := r.DB.QueryContext(ctx, query, req.StartDate, req.EndDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	invoiceMap := map[string]*entity.Invoice{}
+	for rows.Next() {
+		invoice := new(entity.Invoice)
+		product := new(entity.Product)
+
+		if err := rows.Scan(
+			&invoice.InvoiceNo,
+			&invoice.InvoiceDate,
+			&invoice.CustomerName,
+			&invoice.SalesPersonName,
+			&invoice.PaymentType,
+			&invoice.Notes,
+			&product.ID,
+			&product.Name,
+			&product.Quantity,
+			&product.TotalCostOfGoods,
+			&product.TotalPriceSold,
+		); err != nil {
+			return nil, err
+		}
+
+		product.InvoiceNo = invoice.InvoiceNo
+		if _, ok := invoiceMap[invoice.InvoiceNo]; !ok {
+			invoice.Products = []*entity.Product{}
+			invoiceMap[invoice.InvoiceNo] = invoice
+		}
+
+		invoiceMap[invoice.InvoiceNo].Products = append(invoiceMap[invoice.InvoiceNo].Products, product)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	invoices := []*entity.Invoice{}
+	for _, invoice := range invoiceMap {
+		invoices = append(invoices, invoice)
+	}
+
+	return invoices, nil
 }
 
 func (r *invoiceRepositoryImpl) Save(ctx context.Context, invoice *entity.Invoice) error {

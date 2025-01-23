@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/JordanMarcelino/widatech-technical/internal/dto"
 	"github.com/JordanMarcelino/widatech-technical/internal/pkg/utils/ginutils"
+	"github.com/JordanMarcelino/widatech-technical/internal/pkg/utils/pageutils"
 	"github.com/JordanMarcelino/widatech-technical/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
@@ -23,7 +24,20 @@ func (c *InvoiceController) Route(r *gin.Engine) {
 }
 
 func (c *InvoiceController) Search(ctx *gin.Context) {
+	req := new(dto.SearchInvoiceRequest)
+	if err := ctx.ShouldBind(req); err != nil {
+		ctx.Error(err)
+		return
+	}
 
+	res, paging, err := c.invoiceUseCase.Search(ctx, req)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	paging.Links = pageutils.CreateLinks(ctx.Request, int(paging.Page), int(paging.Size), int(paging.TotalItem), int(paging.TotalPage))
+	ginutils.ResponseOKPagination(ctx, res, paging)
 }
 
 func (c *InvoiceController) Create(ctx *gin.Context) {

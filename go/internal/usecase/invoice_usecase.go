@@ -5,11 +5,12 @@ import (
 
 	"github.com/JordanMarcelino/widatech-technical/internal/dto"
 	"github.com/JordanMarcelino/widatech-technical/internal/entity"
+	"github.com/JordanMarcelino/widatech-technical/internal/pkg/utils/pageutils"
 	"github.com/JordanMarcelino/widatech-technical/internal/repository"
 )
 
 type InvoiceUseCase interface {
-	Search(ctx context.Context, req *dto.SearchInvoiceRequest) ([]*dto.InvoiceResponse, error)
+	Search(ctx context.Context, req *dto.SearchInvoiceRequest) ([]*dto.InvoiceResponse, *dto.PageMetaData, error)
 	Create(ctx context.Context, req *dto.CreateInvoiceRequest) (*dto.InvoiceResponse, error)
 	Update(ctx context.Context, req *dto.UpdateInvoiceRequest) (*dto.InvoiceResponse, error)
 	Delete(ctx context.Context, req *dto.DeleteInvoiceRequest) error
@@ -27,8 +28,14 @@ func NewInvoiceUseCase(dataStore repository.DataStore, invoiceRepository reposit
 	}
 }
 
-func (u *invoiceUseCaseImpl) Search(ctx context.Context, req *dto.SearchInvoiceRequest) ([]*dto.InvoiceResponse, error) {
-	panic("implement me")
+func (u *invoiceUseCaseImpl) Search(ctx context.Context, req *dto.SearchInvoiceRequest) ([]*dto.InvoiceResponse, *dto.PageMetaData, error) {
+	invoices, err := u.invoiceRepository.Search(ctx, req)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	res, metaData := pageutils.CreateMetaData(invoices, req.Page, req.Limit)
+	return dto.ToInvoiceResponses(res), metaData, nil
 }
 
 func (u *invoiceUseCaseImpl) Create(ctx context.Context, req *dto.CreateInvoiceRequest) (*dto.InvoiceResponse, error) {
