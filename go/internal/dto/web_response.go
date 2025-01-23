@@ -2,7 +2,7 @@ package dto
 
 type WebResponse[T any] struct {
 	Message string        `json:"message,omitempty"`
-	Data    T             `json:"data,omitempty"`
+	Data    T             `json:"data"`
 	Paging  *PageMetaData `json:"paging,omitempty"`
 	Errors  []FieldError  `json:"errors,omitempty"`
 }

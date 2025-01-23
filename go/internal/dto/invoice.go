@@ -43,6 +43,16 @@ type DeleteInvoiceRequest struct {
 	InvoiceNo string `json:"-"`
 }
 
+func ToInvoiceResponses(invoices []*entity.Invoice) []*InvoiceResponse {
+	res := []*InvoiceResponse{}
+
+	for _, invoice := range invoices {
+		res = append(res, ToInvoiceResponse(invoice))
+	}
+
+	return res
+}
+
 func ToInvoiceResponse(invoice *entity.Invoice) *InvoiceResponse {
 	return &InvoiceResponse{
 		InvoiceNo:       invoice.InvoiceNo,
