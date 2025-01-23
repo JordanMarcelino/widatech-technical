@@ -15,6 +15,7 @@ type InvoiceRepository interface {
 	Update(ctx context.Context, invoice *entity.Invoice) error
 	DeleteByID(ctx context.Context, invoiceNo string) error
 	IsExistsByID(ctx context.Context, invoiceNo string) bool
+	CountTransaction(ctx context.Context, req *dto.SearchInvoiceRequest) (*entity.InvoiceTransaction, error)
 }
 
 type invoiceRepositoryImpl struct {
@@ -126,10 +127,10 @@ func (r *invoiceRepositoryImpl) DeleteByID(ctx context.Context, invoiceNo string
 
 func (r *invoiceRepositoryImpl) IsExistsByID(ctx context.Context, invoiceNo string) bool {
 	query := `
-		select exists(
-			select * from invoices where invoice_no = $1
+	select exists(
+		select * from invoices where invoice_no = $1
 		)
-	`
+		`
 
 	var exists bool
 	if err := r.DB.QueryRowContext(ctx, query, invoiceNo).Scan(&exists); err != nil {
@@ -137,4 +138,40 @@ func (r *invoiceRepositoryImpl) IsExistsByID(ctx context.Context, invoiceNo stri
 	}
 
 	return exists
+}
+
+func (r *invoiceRepositoryImpl) CountTransaction(ctx context.Context, req *dto.SearchInvoiceRequest) (*entity.InvoiceTransaction, error) {
+	query := `
+		with total_profit as(
+			select
+				sum(p.total_price_sold - p.total_cost_of_goods) total_profit
+			from
+				invoices i
+			join
+				products p on i.invoice_no = p.invoice_no
+			where
+				i.invoice_date between $1 and $2
+		),
+		total_cash as (
+    		select
+				sum(p.total_price_sold) total_cash
+			from
+				invoices i
+			join
+				products p on i.invoice_no = p.invoice_no
+			where
+				i.invoice_date between $1 and $2 and i.payment_type = 'CASH'
+		)
+		select
+			tp.total_profit, tc.total_cash
+		from
+			total_cash tc, total_profit tp
+	`
+
+	tx := new(entity.InvoiceTransaction)
+	if err := r.DB.QueryRowContext(ctx, query, req.StartDate, req.EndDate).Scan(&tx.TotalProfit, &tx.TotalCash); err != nil {
+		return nil, err
+	}
+
+	return tx, nil
 }

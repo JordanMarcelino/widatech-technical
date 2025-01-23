@@ -1,6 +1,15 @@
 package dto
 
-import "github.com/JordanMarcelino/widatech-technical/internal/entity"
+import (
+	"github.com/JordanMarcelino/widatech-technical/internal/entity"
+	"github.com/shopspring/decimal"
+)
+
+type SearchInvoiceResponse struct {
+	Invoices    []*InvoiceResponse `json:"invoices"`
+	TotalCash   decimal.Decimal    `json:"total_cash"`
+	TotalProfit decimal.Decimal    `json:"total_profit"`
+}
 
 type InvoiceResponse struct {
 	InvoiceNo       string             `json:"invoice_no"`

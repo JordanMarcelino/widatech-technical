@@ -13,7 +13,7 @@ import (
 )
 
 type InvoiceUseCase interface {
-	Search(ctx context.Context, req *dto.SearchInvoiceRequest) ([]*dto.InvoiceResponse, *dto.PageMetaData, error)
+	Search(ctx context.Context, req *dto.SearchInvoiceRequest) (*dto.SearchInvoiceResponse, *dto.PageMetaData, error)
 	Create(ctx context.Context, req *dto.CreateInvoiceRequest) (*dto.InvoiceResponse, error)
 	Update(ctx context.Context, req *dto.UpdateInvoiceRequest) (*dto.InvoiceResponse, error)
 	Delete(ctx context.Context, req *dto.DeleteInvoiceRequest) error
@@ -31,14 +31,25 @@ func NewInvoiceUseCase(dataStore repository.DataStore, invoiceRepository reposit
 	}
 }
 
-func (u *invoiceUseCaseImpl) Search(ctx context.Context, req *dto.SearchInvoiceRequest) ([]*dto.InvoiceResponse, *dto.PageMetaData, error) {
+func (u *invoiceUseCaseImpl) Search(ctx context.Context, req *dto.SearchInvoiceRequest) (*dto.SearchInvoiceResponse, *dto.PageMetaData, error) {
 	invoices, err := u.invoiceRepository.Search(ctx, req)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	res, metaData := pageutils.CreateMetaData(invoices, req.Page, req.Limit)
-	return dto.ToInvoiceResponses(res), metaData, nil
+	tx, err := u.invoiceRepository.CountTransaction(ctx, req)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	items, metaData := pageutils.CreateMetaData(invoices, req.Page, req.Limit)
+	res := &dto.SearchInvoiceResponse{
+		Invoices:    dto.ToInvoiceResponses(items),
+		TotalCash:   tx.TotalCash,
+		TotalProfit: tx.TotalProfit,
+	}
+
+	return res, metaData, nil
 }
 
 func (u *invoiceUseCaseImpl) Create(ctx context.Context, req *dto.CreateInvoiceRequest) (*dto.InvoiceResponse, error) {

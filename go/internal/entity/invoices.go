@@ -1,5 +1,7 @@
 package entity
 
+import "github.com/shopspring/decimal"
+
 type Invoice struct {
 	InvoiceNo       string
 	InvoiceDate     string
@@ -8,4 +10,9 @@ type Invoice struct {
 	PaymentType     string
 	Notes           string
 	Products        []*Product
+}
+
+type InvoiceTransaction struct {
+	TotalProfit decimal.Decimal
+	TotalCash   decimal.Decimal
 }
