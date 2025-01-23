@@ -105,7 +105,14 @@ func (r *invoiceRepositoryImpl) Save(ctx context.Context, invoice *entity.Invoic
 }
 
 func (r *invoiceRepositoryImpl) Update(ctx context.Context, invoice *entity.Invoice) error {
-	panic("implement me")
+	query := `
+		update invoices set invoice_date = $2, customer_name = $3, sales_person_name = $4, payment_type = $5, notes = $6
+		where invoice_no = $1
+	`
+
+	_, err := r.DB.ExecContext(ctx, query, invoice.InvoiceNo, invoice.InvoiceDate, invoice.CustomerName, invoice.SalesPersonName, invoice.PaymentType, invoice.Notes)
+
+	return err
 }
 
 func (r *invoiceRepositoryImpl) DeleteByID(ctx context.Context, invoiceNo string) error {

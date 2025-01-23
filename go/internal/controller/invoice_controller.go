@@ -57,7 +57,21 @@ func (c *InvoiceController) Create(ctx *gin.Context) {
 }
 
 func (c *InvoiceController) Update(ctx *gin.Context) {
+	invoiceNo := ctx.Param("invoiceNo")
 
+	req := &dto.UpdateInvoiceRequest{InvoiceNo: invoiceNo}
+	if err := ctx.ShouldBindJSON(req); err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	res, err := c.invoiceUseCase.Update(ctx, req)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ginutils.ResponseOK(ctx, res)
 }
 
 func (c *InvoiceController) Delete(ctx *gin.Context) {

@@ -87,7 +87,57 @@ func (u *invoiceUseCaseImpl) Create(ctx context.Context, req *dto.CreateInvoiceR
 }
 
 func (u *invoiceUseCaseImpl) Update(ctx context.Context, req *dto.UpdateInvoiceRequest) (*dto.InvoiceResponse, error) {
-	panic("implement me")
+	res := new(dto.InvoiceResponse)
+	err := u.dataStore.Atomic(ctx, func(ds repository.DataStore) error {
+		invoiceRepository := ds.InvoiceRepository()
+		productRepository := ds.ProductRepository()
+
+		if ok := invoiceRepository.IsExistsByID(ctx, req.InvoiceNo); !ok {
+			return httperror.NewNotFoundError(constant.InvoiceNotFound)
+		}
+
+		invoice := &entity.Invoice{
+			InvoiceNo:       req.InvoiceNo,
+			InvoiceDate:     req.InvoiceDate,
+			CustomerName:    req.CustomerName,
+			SalesPersonName: req.SalesPersonName,
+			PaymentType:     req.PaymentType,
+			Notes:           req.Notes,
+		}
+		if err := invoiceRepository.Update(ctx, invoice); err != nil {
+			return err
+		}
+
+		if err := productRepository.DeleteByInvoiceNo(ctx, req.InvoiceNo); err != nil {
+			return err
+		}
+
+		products := []*entity.Product{}
+		for _, product := range req.Products {
+			products = append(products, &entity.Product{
+				InvoiceNo:        invoice.InvoiceNo,
+				Name:             product.Name,
+				Quantity:         product.Quantity,
+				TotalCostOfGoods: product.TotalCostOfGoods,
+				TotalPriceSold:   product.TotalPriceSold,
+			})
+		}
+
+		if err := productRepository.SaveBatch(ctx, products); err != nil {
+			return err
+		}
+
+		invoice.Products = products
+		res = dto.ToInvoiceResponse(invoice)
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 func (u *invoiceUseCaseImpl) Delete(ctx context.Context, req *dto.DeleteInvoiceRequest) error {
